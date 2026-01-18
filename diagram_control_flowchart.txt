@@ -1,0 +1,354 @@
+═══════════════════════════════════════════════════════════════════════════
+FIGURE 4: CONTROL ALGORITHM FLOWCHART
+Hysteresis-Based Irrigation Control with Multi-Parameter Decision Logic
+═══════════════════════════════════════════════════════════════════════════
+
+                              ╔═══════════╗
+                              ║   START   ║
+                              ╚═════╤═════╝
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  SYSTEM INITIALIZE   │
+                         ├──────────────────────┤
+                         │ • Setup GPIO Pins    │
+                         │ • Init WiFi Connect  │
+                         │ • Init Sensors       │
+                         │ • Init LCD Display   │
+                         │ • Set Initial State  │
+                         │ • Load Thresholds    │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │   WiFi Connected?    │
+                         └────┬────────────┬────┘
+                           NO │            │ YES
+                              ▼            ▼
+                    ┌──────────────┐   ┌─────────────┐
+                    │ Retry Connect│   │Green LED ON │
+                    │ (20 attempts)│   └──────┬──────┘
+                    └──────┬───────┘          │
+                           │                  │
+                           └──────────────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │ MAIN CONTROL LOOP    │
+                         │ (Continuous)         │
+                         └──────────┬───────────┘
+                                    │
+                              ╔═════▼═════╗
+                              ║   WAIT    ║
+                              ║ 2 Seconds ║
+                              ╚═════╤═════╝
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  READ ALL SENSORS    │
+                         ├──────────────────────┤
+                         │ 1. Soil Moisture     │
+                         │    ADC34 → map()     │
+                         │    → 0-100%          │
+                         │                      │
+                         │ 2. Rain Sensor       │
+                         │    Digital GPIO35    │
+                         │    → true/false      │
+                         │                      │
+                         │ 3. pH Value          │
+                         │    ADC36 → formula   │
+                         │    → pH 0-14         │
+                         │                      │
+                         │ 4. DHT22             │
+                         │    Temp & Humidity   │
+                         │    → °C and %        │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  DATA VALIDATION     │
+                         ├──────────────────────┤
+                         │ • Check for NaN      │
+                         │ • Verify Ranges      │
+                         │ • Filter Outliers    │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  STORE SENSOR DATA   │
+                         │  in SensorData Struct│
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                    ╔═══════════════════════════════╗
+                    ║ IRRIGATION DECISION ALGORITHM ║
+                    ╚═══════════════╤═══════════════╝
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  PRIORITY CHECK #1   │
+                         │  Rain Detected?      │
+                         └────┬────────────┬────┘
+                           YES│            │NO
+                              │            │
+                              ▼            ▼
+                    ┌──────────────┐   ┌────────────────────┐
+                    │ RAIN OVERRIDE│   │ PROCEED TO MOISTURE│
+                    ├──────────────┤   │ THRESHOLD CHECK    │
+                    │ Pump = OFF   │   └─────────┬──────────┘
+                    │ Status:      │             │
+                    │ "RAIN_STOP"  │             │
+                    │              │             │
+                    │ Reason: Water│             │
+                    │ conservation │             │
+                    └──────┬───────┘             │
+                           │                     │
+                           │                     ▼
+                           │          ┌──────────────────────┐
+                           │          │ HYSTERESIS CONTROL   │
+                           │          │ Moisture Check       │
+                           │          └──────────┬───────────┘
+                           │                     │
+                           │                     ▼
+                           │          ┌──────────────────────┐
+                           │          │ Moisture < 30%?      │
+                           │          │ (Lower Threshold)    │
+                           │          └────┬────────────┬────┘
+                           │            YES│            │NO
+                           │               │            │
+                           │               ▼            ▼
+                           │    ┌──────────────┐   ┌──────────────────┐
+                           │    │ ACTIVATE PUMP│   │ Moisture > 60%?  │
+                           │    ├──────────────┤   │ (Upper Threshold)│
+                           │    │ Pump = ON    │   └────┬────────┬────┘
+                           │    │ Status:      │     YES│        │NO
+                           │    │ "IRRIGATING" │        │        │
+                           │    │              │        ▼        ▼
+                           │    │ Red LED: ON  │   ┌─────────┐ ┌──────────────┐
+                           │    │ Yellow: OFF  │   │STOP PUMP│ │MAINTAIN STATE│
+                           │    └──────┬───────┘   ├─────────┤ ├──────────────┤
+                           │           │           │Pump: OFF│ │Pump = CURRENT│
+                           │           │           │Status:  │ │Status: HOLD  │
+                           │           │           │"MONITOR"│ │(Hysteresis)  │
+                           │           │           │         │ │              │
+                           │           │           │Red: OFF │ │Dead Zone:    │
+                           │           │           │Yellow:  │ │30-60%        │
+                           │           │           │As needed│ │Prevents      │
+                           │           │           └────┬────┘ │Oscillation   │
+                           │           │                │      └──────┬───────┘
+                           │           │                │             │
+                           └───────────┴────────────────┴─────────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ UPDATE PUMP OUTPUT   │
+                                     ├──────────────────────┤
+                                     │ GPIO 26 (Red LED)    │
+                                     │ = pumpActive status  │
+                                     │                      │
+                                     │ (Future: Relay GPIO) │
+                                     └──────────┬───────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ UPDATE LED INDICATORS│
+                                     ├──────────────────────┤
+                                     │ Red (26):    Pump    │
+                                     │ Green (27):  WiFi OK │
+                                     │ Blue (25):   Upload  │
+                                     │ Yellow (33): Warning │
+                                     └──────────┬───────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │  UPDATE LCD DISPLAY  │
+                                     ├──────────────────────┤
+                                     │ Line 1:              │
+                                     │ "M:XX% T:XX°C"       │
+                                     │                      │
+                                     │ Line 2:              │
+                                     │ "H:XX% P:ON/OFF"     │
+                                     │                      │
+                                     │ Refresh: 1Hz         │
+                                     └──────────┬───────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ CHECK pH & TEMP      │
+                                     │ WARNING CONDITIONS   │
+                                     └────┬────────────┬────┘
+                                          │            │
+                                          ▼            ▼
+                              ┌──────────────┐    ┌──────────────┐
+                              │ pH < 5.5 OR  │    │ Temp > 35°C? │
+                              │ pH > 7.5?    │    │              │
+                              └────┬────┬────┘    └────┬────┬────┘
+                                YES│    │NO         YES│    │NO
+                                   │    │              │    │
+                                   ▼    │              ▼    │
+                         ┌──────────────┐│    ┌──────────────┐│
+                         │Yellow LED: ON││    │Yellow LED: ON││
+                         │Display: pH!! ││    │Display: HOT! ││
+                         └──────────────┘│    └──────────────┘│
+                                         │                    │
+                                         └────────┬───────────┘
+                                                  │
+                                                  ▼
+                                     ┌──────────────────────┐
+                                     │ SERIAL LOG OUTPUT    │
+                                     ├──────────────────────┤
+                                     │ Print to Serial:     │
+                                     │ • All sensor values  │
+                                     │ • Pump status        │
+                                     │ • System status      │
+                                     │ • Warnings           │
+                                     │ • WiFi RSSI          │
+                                     │                      │
+                                     │ Baud: 115200         │
+                                     └──────────┬───────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ CLOUD UPLOAD CHECK   │
+                                     │ 30 Seconds Elapsed?  │
+                                     └────┬────────────┬────┘
+                                       YES│            │NO
+                                          │            │
+                                          ▼            │
+                              ┌─────────────────────┐  │
+                              │ CLOUD DATA UPLOAD   │  │
+                              ├─────────────────────┤  │
+                              │ 1. Create JSON      │  │
+                              │    Payload          │  │
+                              │                     │  │
+                              │ 2. HTTP POST        │  │
+                              │    to API endpoint  │  │
+                              │                     │  │
+                              │ 3. Check Response   │  │
+                              │    (Timeout: 5s)    │  │
+                              │                     │  │
+                              │ 4. Blue LED Blink   │  │
+                              │    (Upload indica.) │  │
+                              │                     │  │
+                              │ 5. Reset Timer      │  │
+                              └──────────┬──────────┘  │
+                                         │             │
+                                         └─────────────┘
+                                                │
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ WiFi Still Connected?│
+                                     └────┬────────────┬────┘
+                                       YES│            │NO
+                                          │            │
+                                          │            ▼
+                                          │   ┌─────────────────┐
+                                          │   │ Auto-Reconnect  │
+                                          │   │ Attempt (Async) │
+                                          │   │ Green LED: Blink│
+                                          │   └────────┬────────┘
+                                          │            │
+                                          └────────────┘
+                                                │
+                                                ▼
+                                        ╔═══════════════╗
+                                        ║  LOOP BACK    ║
+                                        ║  TO WAIT 2s   ║
+                                        ╚═══════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════
+HYSTERESIS STATE MACHINE
+═══════════════════════════════════════════════════════════════════════════
+
+State Transitions:
+
+    ┌─────────────┐  Moisture < 30%   ┌──────────────┐
+    │             │ ─────────────────► │              │
+    │    IDLE     │                    │  IRRIGATING  │
+    │  (Pump OFF) │ ◄───────────────── │  (Pump ON)   │
+    │             │  Moisture > 60%    │              │
+    └──────┬──────┘                    └──────┬───────┘
+           │         RAIN DETECTED            │
+           │              │                   │
+           └──────────────┼───────────────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │  RAIN_STOP  │
+                   │  (Override) │
+                   │  Pump: OFF  │
+                   └─────────────┘
+
+Hysteresis Zone (30-60%): System maintains current state
+  • Prevents rapid switching
+  • Reduces pump wear
+  • Saves energy
+  • Provides stable control
+
+
+═══════════════════════════════════════════════════════════════════════════
+DECISION PRIORITY HIERARCHY
+═══════════════════════════════════════════════════════════════════════════
+
+    Priority 1: Rain Detection (HIGHEST)
+         │
+         ├─► If Rain = TRUE → Force Pump OFF (override all)
+         │
+    Priority 2: Moisture Thresholds
+         │
+         ├─► If Moisture < 30% → Activate Pump
+         │
+         ├─► If Moisture > 60% → Deactivate Pump
+         │
+         ├─► If 30% ≤ Moisture ≤ 60% → Maintain State
+         │
+    Priority 3: Warning Conditions (NON-BLOCKING)
+         │
+         ├─► If pH out of range → Yellow LED + Display
+         │
+         └─► If Temp > 35°C → Yellow LED + Display
+
+
+═══════════════════════════════════════════════════════════════════════════
+TIMING PARAMETERS
+═══════════════════════════════════════════════════════════════════════════
+
+    Sensor Read Interval:     2000 ms (2 seconds)
+    LCD Update Interval:      1000 ms (1 second)
+    Cloud Upload Interval:    30000 ms (30 seconds)
+    WiFi Reconnect Timeout:   10000 ms (10 seconds)
+    HTTP Request Timeout:     5000 ms (5 seconds)
+    DHT22 Sampling Interval:  2000 ms (minimum)
+
+
+═══════════════════════════════════════════════════════════════════════════
+CAPTION FOR PAPER:
+═══════════════════════════════════════════════════════════════════════════
+
+"Flowchart of the irrigation control algorithm implementing hysteresis-based
+decision logic. The algorithm prioritizes rain detection for water conservation,
+applies dual-threshold moisture control to prevent pump cycling, and monitors
+pH and temperature for warning generation. The system operates in a continuous
+loop with cloud synchronization every 30 seconds."
+
+═══════════════════════════════════════════════════════════════════════════
+DRAWING INSTRUCTIONS:
+═══════════════════════════════════════════════════════════════════════════
+
+For creating the actual figure:
+1. Use standard flowchart symbols:
+   - Rectangle: Process
+   - Diamond: Decision
+   - Oval: Start/End
+   - Parallelogram: Input/Output
+2. Color code decision points:
+   - Red: Rain detection (priority 1)
+   - Orange: Moisture thresholds (priority 2)
+   - Yellow: Warnings (priority 3)
+3. Show the continuous loop clearly
+4. Highlight the hysteresis zone (30-60%) with shading
+5. Use consistent arrow styles for flow direction
+6. Keep text concise in boxes
+7. Suggested tools: draw.io, Lucidchart, Microsoft Visio, or LaTeX TikZ
+

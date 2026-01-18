@@ -1,0 +1,162 @@
+═══════════════════════════════════════════════════════════════════════════
+FIGURE 1: SYSTEM ARCHITECTURE DIAGRAM
+Three-Tier IoT Architecture for Smart Irrigation System
+═══════════════════════════════════════════════════════════════════════════
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║          SMART IRRIGATION SYSTEM - THREE-TIER ARCHITECTURE            ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────┐
+│                         TIER 1: SENSING LAYER                         │
+│                      (Environmental Data Acquisition)                 │
+└───────────────────────────────────────────────────────────────────────┘
+
+        ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+        │ Soil Moisture│  │ Rain Sensor  │  │  pH Sensor   │  │    DHT22     │
+        │    Sensor    │  │              │  │              │  │ Temp/Humidity│
+        ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤
+        │ Capacitive   │  │  Resistive   │  │ Analog Probe │  │  Digital     │
+        │ 0-100% Range │  │ Digital OUT  │  │ pH 0-14      │  │ -40 to 80°C  │
+        │ ADC Input    │  │ Wet/Dry Det  │  │ Voltage OUT  │  │ 0-100% RH    │
+        └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+               │                 │                 │                 │
+               │ GPIO 34         │ GPIO 35         │ GPIO 36         │ GPIO 4
+               │ (ADC1_CH6)      │ (Digital)       │ (ADC1_CH0)      │ (Digital)
+               │ Analog          │ HIGH/LOW        │ Analog          │ Serial
+               │                 │                 │                 │
+               └─────────────────┴─────────────────┴─────────────────┘
+                                        │
+                                        ▼
+┌───────────────────────────────────────────────────────────────────────┐
+│                      TIER 2: PROCESSING LAYER                         │
+│                    (Intelligence & Decision Making)                   │
+└───────────────────────────────────────────────────────────────────────┘
+
+        ┌─────────────────────────────────────────────────────────────┐
+        │                  ESP32 MICROCONTROLLER                       │
+        │             (Central Processing & Control Unit)              │
+        │                                                               │
+        │  ┌──────────────┐   ┌───────────────┐   ┌───────────────┐  │
+        │  │    Data      │   │  Irrigation   │   │     WiFi      │  │
+        │  │ Acquisition  │──→│    Control    │──→│ Communication │  │
+        │  │   Module     │   │   Algorithm   │   │    Module     │  │
+        │  ├──────────────┤   ├───────────────┤   ├───────────────┤  │
+        │  │• ADC Reading │   │• Hysteresis   │   │• 802.11 b/g/n │  │
+        │  │• Digital I/O │   │  Logic        │   │• HTTP Client  │  │
+        │  │• I2C Comm    │   │• Multi-param  │   │• JSON Format  │  │
+        │  │• Calibration │   │  Decision     │   │• Auto-Reconnect│ │
+        │  │• Filtering   │   │• Rain Override│   │• RSSI Monitor │  │
+        │  └──────────────┘   └───────────────┘   └───────────────┘  │
+        │                                                               │
+        │  Technical Specs:                                            │
+        │  • Dual-core Tensilica LX6, 240 MHz                          │
+        │  • 520 KB SRAM, 4 MB Flash                                   │
+        │  • 12-bit ADC (0-4095 range)                                 │
+        │  • 3.3V Logic Level                                          │
+        │  • FreeRTOS Support                                          │
+        └─────────────────────────────────────────────────────────────┘
+                          │                          │
+                          │                          │
+            ┌─────────────┴────────┐    ┌────────────┴─────────────┐
+            ▼                      ▼    ▼                          ▼
+
+┌───────────────────────────┐  ┌──────────────────────────────────────┐
+│  TIER 3A: ACTUATION       │  │  TIER 3B: COMMUNICATION LAYER        │
+│        (Local Output)     │  │        (Remote Connectivity)         │
+└───────────────────────────┘  └──────────────────────────────────────┘
+
+┌────────────────────────┐      ┌────────────────────────────────────┐
+│   16×2 Character LCD   │      │        WiFi Network (2.4GHz)       │
+│    Display (I2C)       │      │              802.11                │
+├────────────────────────┤      └──────────────┬─────────────────────┘
+│ • Moisture %           │                     │
+│ • Temperature °C       │                     ▼
+│ • Humidity %           │      ┌────────────────────────────────────┐
+│ • Pump Status          │      │         Internet Gateway            │
+│ • System Status        │      │         (WiFi Router)               │
+│                        │      └──────────────┬─────────────────────┘
+│ GPIO 21 (SDA)          │                     │
+│ GPIO 22 (SCL)          │                     ▼
+└────────────────────────┘      ┌────────────────────────────────────┐
+                                │      Cloud Server / Backend        │
+┌────────────────────────┐      │                                    │
+│   LED Status Indicators│      │  ┌──────────┐  ┌──────────────┐   │
+├────────────────────────┤      │  │ REST API │  │   Database   │   │
+│ • Red (GPIO 26)        │      │  │(Node.js) │←→│  (MongoDB)   │   │
+│   Pump Active          │      │  └──────────┘  └──────────────┘   │
+│ • Green (GPIO 27)      │      │         │              │          │
+│   System OK/WiFi       │      │  ┌──────▼──────────────▼──────┐   │
+│ • Blue (GPIO 25)       │      │  │   Analytics Engine      │   │
+│   Cloud Upload         │      │  │   • Data Aggregation        │   │
+│ • Yellow (GPIO 33)     │      │  │   • Trend Analysis          │   │
+│   Low Moisture Warning │      │  │   • Alerts Generation       │   │
+│                        │      │  └─────────────────────────────┘   │
+│ 220Ω Resistors         │      └────────────────────────────────────┘
+└────────────────────────┘                     │
+                                               │
+┌────────────────────────┐                     ▼
+│  Pump Control (Relay)  │      ┌────────────────────────────────────┐
+│   (Future Production)  │      │      USER INTERFACE OPTIONS        │
+├────────────────────────┤      ├────────────────────────────────────┤
+│ • Solenoid Valve       │      │  ┌────────────┐  ┌─────────────┐  │
+│ • Water Pump (12V)     │      │  │    Web     │  │   Mobile    │  │
+│ • Current: 0.5-2A      │      │  │  Dashboard │  │     App     │  │
+│                        │      │  ├────────────┤  ├─────────────┤  │
+│ GPIO-X (TBD)           │      │  │• Real-time │  │• Push       │  │
+│ (Demo: LED indicator)  │      │  │  Charts    │  │  Notify     │  │
+└────────────────────────┘      │  │• Historical│  │• Remote     │  │
+                                │  │  Data      │  │  Control    │  │
+                                │  │• Alerts    │  │• GPS Farms  │  │
+                                │  └────────────┘  └─────────────┘  │
+                                └────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════
+DATA FLOW DIAGRAM
+═══════════════════════════════════════════════════════════════════════════
+
+    SENSORS → [ADC/Digital Read] → ESP32 → [Processing] → OUTPUTS
+       ↓                                                      ↓
+   Environment                                          LCD + LEDs
+       ↓                                                      ↓
+   Field Data  →  [2s Interval]  →  Validation  →      User Feedback
+                                         │
+                                         ↓
+                              [Hysteresis Algorithm]
+                                         │
+                        ┌────────────────┴────────────────┐
+                        ▼                                 ▼
+                   Local Control                    Cloud Upload
+                   (Pump Decision)                  (30s Interval)
+                        │                                 │
+                        ▼                                 ▼
+                   Actuate Relay                   JSON via HTTP
+                        │                                 │
+                        ▼                                 ▼
+                   Water Delivery                  Remote Monitoring
+
+
+═══════════════════════════════════════════════════════════════════════════
+CAPTION FOR PAPER:
+═══════════════════════════════════════════════════════════════════════════
+
+"Three-tier architecture of the proposed smart irrigation system showing
+sensing layer (environmental data acquisition), processing layer (ESP32-based
+intelligence and decision making), and dual output layer comprising local
+actuation (LCD, LEDs, relay) and cloud communication for remote monitoring."
+
+═══════════════════════════════════════════════════════════════════════════
+DRAWING INSTRUCTIONS:
+═══════════════════════════════════════════════════════════════════════════
+
+For creating the actual figure in drawing software:
+1. Use hierarchical layout with three horizontal tiers
+2. Color code: Sensing (Blue), Processing (Green), Output (Orange)
+3. Show data flow with directional arrows
+4. Include key specifications in each component box
+5. Distinguish between local and cloud communication paths
+6. Use professional block diagram style (not flowchart)
+7. Maintain clear separation between the three tiers
+8. Suggested tools: draw.io, Lucidchart, PowerPoint, or LaTeX TikZ
+
