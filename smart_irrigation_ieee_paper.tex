@@ -1,6 +1,5 @@
 \documentclass[conference]{IEEEtran}
 
-% Required packages
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
@@ -12,7 +11,6 @@
 \usepackage{siunitx}
 \usepackage{hyperref}
 
-% Disable hyperlink colors for print
 \hypersetup{
     colorlinks=false,
     linkcolor=black,
@@ -21,10 +19,6 @@
 }
 
 \begin{document}
-
-% ====================================================================
-% TITLE AND AUTHORS
-% ====================================================================
 
 \title{An ESP32-Based Smart Irrigation System for Precision Farming Using Multi-Sensor IoT Architecture}
 
@@ -40,47 +34,39 @@
 
 \maketitle
 
-% ====================================================================
-% ABSTRACT
-% ====================================================================
-
 \begin{abstract}
-Water scarcity and inefficient irrigation practices pose significant challenges to modern agriculture, with traditional methods consuming approximately 70\% of global freshwater resources. This paper presents a cost-effective Internet of Things (IoT) based smart irrigation system for precision farming applications. The proposed system employs an ESP32 microcontroller as the central processing unit, integrating four environmental sensors: capacitive soil moisture sensor, rain detector, pH sensor, and DHT22 temperature-humidity sensor. A novel hysteresis-based control algorithm prevents rapid pump cycling by implementing dual thresholds at 30\% (activation) and 60\% (deactivation) moisture levels, reducing mechanical wear by 75-80\% compared to conventional single-threshold systems. The system features real-time monitoring through a 16$\times$2 LCD display, visual feedback via four LED indicators, and cloud connectivity using WiFi for remote data access. Field testing demonstrates system response times under 3 seconds, sensor accuracy within $\pm$5\%, and power consumption of only 1.8W. This scalable, modular architecture provides farmers with an accessible precision irrigation solution, contributing to sustainable water management and improved agricultural productivity.
+Water shortage and poor irrigation methods present serious problems to contemporary agriculture, and the traditional methodologies use about 70\% of the worldwide clean water resources. The current paper introduces a cost-effective Internet of Things (IoT) based smart irrigation system for precision farming applications. The proposed system utilizes ESP32 as the central processing unit, combining four environmental sensors: capacitive soil moisture sensor, rain sensor, pH sensor, and DHT22 sensor of temperature and humidity. A novel hysteresis-based control algorithm avoids rapid pump cycling by adopting dual thresholds at 30\% (activation) and 60\% (deactivation) moisture levels, cutting mechanical wear by 75-80\% as compared to traditional single-threshold systems. The system features real-time monitoring with a 16$\times$2 LCD display, visual feedback through four LED indicators, and connectivity to the cloud via WiFi for remote data access. Field testing demonstrates system response times less than 3 seconds, sensor precision within $\pm$5\%, and power consumption of only 1.8W. This modular and scalable architecture offers farmers an accessible precision irrigation solution, helping in sustainable water management and better agricultural productivity.
 \end{abstract}
 
 \begin{IEEEkeywords}
 Smart irrigation, IoT, precision farming, ESP32, sensor networks, hysteresis control, water conservation, environmental monitoring
 \end{IEEEkeywords}
 
-% ====================================================================
-% I. INTRODUCTION
-% ====================================================================
-
 \section{Introduction}
 
-\IEEEPARstart{A}{griculture} consumes approximately 70\% of global freshwater resources, yet traditional irrigation methods achieve only 40-60\% water use efficiency \cite{fao2017}. With the world population projected to reach 9.7 billion by 2050, sustainable water management in agriculture has become imperative. Precision farming technologies, particularly IoT-based smart irrigation systems, offer promising solutions to optimize water usage while maintaining or improving crop yields.
+\IEEEPARstart{A}{bout} 70\% of the fresh water all over the world is used in agriculture, and the traditional irrigation methods achieve only 40-60\% water use efficiency \cite{fao2017}. With the world population projected to be 9.7 billion by 2050, the need for sustainable water management in agriculture has arisen. Precision technologies in the field of farming, including smart irrigation systems powered by IoT, propose promising solutions to optimize water usage without reducing or depleting crop yields.
 
 \subsection{Background and Motivation}
 
-Traditional irrigation practices rely on predetermined schedules or manual observation, often resulting in over-watering or under-watering. Over-irrigation leads to water wastage, nutrient leaching, and increased energy costs, while under-irrigation causes crop stress and reduced yields. The lack of real-time soil condition monitoring and automated decision-making exacerbates these inefficiencies.
+The traditional form of irrigation is based on pre-decided schedules or manual observation, usually leading to excessive watering or under-watering. Excessive irrigation causes waste of water, nutrient leaching, and increased energy costs, while under-irrigation leads to stress and low yield in crops. The lack of real-time monitoring of the soil condition and automated decision-making is contributing to such inefficiencies.
 
-Recent advances in microcontroller technology, sensor miniaturization, and wireless communication have enabled the development of affordable smart irrigation systems. However, many existing solutions suffer from high costs ($\$$200-500), limited sensor integration, simple threshold-based control prone to oscillation, or complex deployment requirements unsuitable for small-scale farmers.
+Recent developments in microcontroller technology, sensor miniaturization, and wireless communication have made possible the development of affordable smart irrigation systems. However, most of the available solutions are expensive (\$200-500), lack sensor fusion, use threshold-based control susceptible to oscillation, or have complex deployment requirements not viable for small-scale farmers.
 
 \subsection{Problem Statement}
 
-The primary challenges in existing irrigation systems include: (1) absence of multi-parameter environmental monitoring, (2) rapid on-off cycling in threshold-based controllers causing mechanical wear, (3) lack of remote monitoring capabilities, (4) high implementation costs, and (5) limited scalability. There exists a need for an integrated solution that addresses these limitations while remaining accessible to farmers with varying technical expertise.
+The key problems with the current irrigation systems include: (1) lack of multi-parameter environmental monitoring, (2) quick on-off cycling in threshold-based controllers causing wear and tear, (3) absence of remote monitoring capabilities, (4) high implementation cost, and (5) limited scalability. There is a demand for an integrated solution that overcomes such limitations and yet is accessible to farmers with different technical skills.
 
 \subsection{Research Objectives}
 
-This work aims to design and implement a smart irrigation system with the following objectives:
+This work seeks to develop and introduce a smart irrigation system with the following objectives:
 
 \begin{enumerate}
-    \item Design a multi-sensor environmental monitoring system capable of measuring soil moisture, rainfall, pH, temperature, and humidity simultaneously
-    \item Implement a hysteresis-based irrigation control algorithm to prevent rapid pump cycling and extend equipment lifespan
-    \item Develop a cloud-connected IoT architecture enabling remote monitoring and data analytics
-    \item Create intuitive local feedback mechanisms through LCD display and LED indicators
-    \item Validate system performance through demonstration prototype testing
-    \item Maintain total component cost below \$50 to ensure accessibility
+    \item Plan a multi-sensor environmental monitoring system able to determine soil moisture, rainfall, pH, temperature, and humidity simultaneously
+    \item Adopt a hysteresis-based irrigation control algorithm to avoid high rate of pump cycling and extend equipment lifespan
+    \item Build a cloud-connected IoT architecture enabling remote monitoring and data analytics
+    \item Develop intuitive local feedback mechanisms through LCD display and LED indicators
+    \item Prove system performance through demonstration prototype testing
+    \item Hold total component cost below \$50 to ensure accessibility
 \end{enumerate}
 
 \subsection{Key Contributions}
@@ -88,31 +74,23 @@ This work aims to design and implement a smart irrigation system with the follow
 The main contributions of this work are:
 
 \begin{itemize}
-    \item \textbf{Novel hysteresis-based control:} A dual-threshold algorithm (30\%-60\%) that eliminates pump oscillation, reducing switching cycles by 75-80\% compared to single-threshold systems
-    \item \textbf{Low-cost ESP32 architecture:} Complete system implementation using affordable components ($<$\$50), making precision irrigation accessible to small-scale farmers
+    \item \textbf{Novel hysteresis-based control:} A dual-threshold algorithm (30\%-60\%) that eliminates pump oscillation, cutting switching cycles by 75-80\% over single-threshold systems
+    \item \textbf{Low-cost ESP32 architecture:} Full system implementation using affordable components ($<$\$50), making precision irrigation accessible to small-scale farmers
     \item \textbf{Multi-parameter decision fusion:} Integration of four environmental parameters (moisture, rain, pH, temperature) with priority-based decision logic
     \item \textbf{Scalable cloud-integrated design:} Modular architecture supporting expansion to multiple irrigation zones and additional sensors
 \end{itemize}
 
-\subsection{Paper Organization}
-
-The remainder of this paper is organized as follows: Section II reviews related work in smart irrigation and IoT agriculture. Section III presents the system design and architecture. Section IV details the methodology and implementation. Section V describes integration and testing procedures. Section VI discusses results and system capabilities. Section VII outlines future work, and Section VIII concludes the paper.
-
-% ====================================================================
-% II. RELATED WORK
-% ====================================================================
-
 \section{Related Work}
-
-\subsection{Traditional Irrigation Methods}
-
-Conventional irrigation systems can be categorized into manual scheduling, timer-based automation, and simple sensor-based control. Manual methods rely on farmer observation and experience, leading to subjective decisions and inconsistent watering. Timer-based systems operate on fixed schedules without considering actual soil conditions, often resulting in water waste during rainy periods or inadequate irrigation during dry spells \cite{liang2019}.
 
 \subsection{Sensor-Based Irrigation Systems}
 
-Recent literature demonstrates growing interest in automated irrigation using soil moisture sensors. Kumar et al. \cite{kumar2016} developed an Arduino Uno-based system with single soil moisture sensor and time-based control, achieving 30\% water savings but suffering from rapid switching issues. Lee et al. \cite{lee2018} implemented a NodeMCU system with WiFi connectivity, though limited to two sensors and lacking pH monitoring crucial for optimal crop growth.
+The recent literature indicates that there is increased interest in automated irrigation using soil moisture sensors. Kumar et al. \cite{kumar2016} developed an Arduino Uno based system with single soil moisture sensor and time-based control, achieving 30\% water savings but suffering from fast switching problems. Lee et al. \cite{lee2018} deployed a NodeMCU system with WiFi connectivity, but limited to only two sensors and lacking pH monitoring vital to successful crop growth.
 
-Garcia et al. \cite{garcia2020} proposed a Raspberry Pi-based solution using PID control for irrigation, demonstrating improved stability over simple threshold systems. However, the higher cost ($\sim$\$90) and increased power consumption (5-7W) limit its suitability for battery-powered field deployments. Table \ref{tab:comparison} compares these existing systems with the proposed approach.
+The solution proposed by Garcia et al. \cite{garcia2020} used a Raspberry Pi with PID control for irrigation, showing better stability over single threshold systems. However, the higher cost (\$90) and increased power consumption (5-7W) limit its suitability for battery-powered deployments. Guti\'{e}rrez et al. \cite{gutiérrez2014} have shown wireless sensor networks using GPRS connectivity for large-scale deployments.
+
+\subsection{IoT Platforms in Agriculture}
+
+Cloud-based agricultural monitoring platforms provide data logging and visualization capabilities \cite{elijah2018}. Communication protocols for agricultural IoT include WiFi (high bandwidth, limited range), LoRa (long range, low data rate), and Zigbee (mesh networking). WiFi is still ideal for greenhouse and small-field applications because of ubiquitous infrastructure availability \cite{ayaz2019}. Table \ref{tab:comparison} compares existing systems with the proposed approach.
 
 \begin{table}[htbp]
 \caption{Comparison of Related Smart Irrigation Systems}
@@ -137,66 +115,25 @@ Chen [5] & Arduino Mega & 2 & Fuzzy Logic & No \\
 \end{tabular}
 \end{table}
 
-\subsection{IoT Platforms in Agriculture}
-
-Cloud-based agricultural monitoring platforms like ThingSpeak, Blynk, and AWS IoT Core provide data logging and visualization capabilities \cite{elijah2018}. However, most implementations use proprietary protocols or require subscription fees. Communication protocols for agricultural IoT include WiFi (high bandwidth, limited range), LoRa (long range, low data rate), and Zigbee (mesh networking, moderate range). WiFi remains optimal for greenhouse and small-field applications due to ubiquitous infrastructure availability \cite{ayaz2019}.
-
-\subsection{Gap Analysis}
-
-Existing systems exhibit several limitations: (1) single or limited sensor integration preventing comprehensive environmental assessment, (2) absence of pH monitoring despite its critical impact on nutrient availability, (3) simple threshold controllers causing mechanical wear through rapid cycling, (4) high costs limiting adoption by small farmers, and (5) lack of local feedback mechanisms requiring constant cloud connectivity.
-
-The proposed system addresses these gaps through multi-sensor integration, hysteresis-based control, cost optimization, and dual local-cloud feedback mechanisms, providing a comprehensive yet accessible precision irrigation solution.
-
-% ====================================================================
-% III. SYSTEM DESIGN AND ARCHITECTURE
-% ====================================================================
+Current systems have such shortcomings as single-sensor integration, lack of pH tracking, simple threshold controllers causing mechanical wear, and high costs \cite{elijah2018, ayaz2019}. The proposed system fills these gaps with multi-sensor integration, hysteresis-based control, and cost optimization.
 
 \section{System Design and Architecture}
 
 \subsection{System Overview}
 
-The proposed smart irrigation system follows a three-tier architecture comprising sensing layer (environmental data acquisition), processing layer (intelligence and decision-making), and actuation layer (local output and cloud communication). This modular design ensures scalability, maintainability, and ease of deployment. Figure \ref{fig:architecture} illustrates the complete system architecture.
+The proposed smart irrigation system is based on a three-tier architecture comprising sensing layer (environmental data acquisition), processing layer (intelligence and decision-making), and actuation layer (local output and cloud communication). This modular design ensures scalability, maintainability, and ease of deployment. Figure \ref{fig:architecture} illustrates the complete system architecture.
 
-% Figure placeholder
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{fig_system_architecture.png}}
 \caption{Three-tier system architecture showing sensing layer (4 environmental sensors), processing layer (ESP32-based control), and dual actuation layer (local display/LEDs and cloud communication).}
 \label{fig:architecture}
 \end{figure}
 
-The design philosophy emphasizes cost-effectiveness, reliability, and user-friendliness. All components utilize standard interfaces (I2C, ADC, GPIO) and are readily available in the market, facilitating easy replacement and upgrades.
+The design philosophy emphasizes cost-effectiveness, reliability, and ease of use. All components employ standard interfaces (I2C, ADC, GPIO) and are easily found on the market, providing easy replacement and upgrades.
 
 \subsection{Hardware Components}
 
-\subsubsection{Microcontroller Unit}
-
-The system employs the ESP32-WROOM-32 module as the central controller, selected for its unique combination of processing power, integrated WiFi, and cost-effectiveness. Key specifications include:
-
-\begin{itemize}
-    \item Dual-core Tensilica LX6 processor operating at 240 MHz
-    \item 520 KB SRAM and 4 MB Flash memory
-    \item 18 channels of 12-bit Analog-to-Digital Converters (ADC)
-    \item Built-in WiFi 802.11 b/g/n (2.4 GHz) and Bluetooth 4.2
-    \item 34 programmable GPIO pins with 3.3V logic levels
-    \item Hardware support for I2C, SPI, UART protocols
-    \item Operating voltage: 3.3V with onboard regulation
-\end{itemize}
-
-The ESP32 provides significant advantages over alternatives like Arduino Uno (no WiFi, limited processing) and Raspberry Pi (higher cost, greater power consumption). Its dual-core architecture enables concurrent sensor reading and network communication without blocking operations.
-
-\subsubsection{Sensor Subsystem}
-
-Four environmental sensors provide comprehensive field condition monitoring:
-
-\textbf{1. Capacitive Soil Moisture Sensor:} Unlike resistive sensors prone to corrosion, the capacitive variant measures dielectric permittivity changes in soil, offering superior longevity. Operating range: 0-100\% volumetric moisture content. Analog output voltage: 0-3.3V. Calibrated against oven-dry (0\%) and saturated (100\%) soil samples.
-
-\textbf{2. Rain Sensor:} Resistive rain detector with digital output (HIGH=dry, LOW=rain). Provides critical override functionality to prevent irrigation during rainfall, conserving water and preventing over-saturation.
-
-\textbf{3. pH Sensor:} Analog pH probe measuring soil acidity/alkalinity across 0-14 pH range. Accuracy: $\pm$0.1 pH after three-point calibration. Essential for monitoring nutrient availability as most crops require pH 5.5-7.5 for optimal growth.
-
-\textbf{4. DHT22 Temperature-Humidity Sensor:} Digital sensor measuring ambient temperature (-40 to 80°C, $\pm$0.5°C accuracy) and relative humidity (0-100\% RH, $\pm$2-5\% accuracy). Operates via single-wire serial protocol with 2-second minimum sampling interval.
-
-Table \ref{tab:hardware} presents detailed hardware specifications for all major components.
+The system uses the ESP32-WROOM-32 module (dual-core 240 MHz, integrated WiFi, 12-bit ADC) as the central controller, having advantages over Arduino Uno (no WiFi) and Raspberry Pi (higher cost). Four environmental sensors provide field monitoring: (1) capacitive soil moisture sensor (0-100\%, corrosion resistant), (2) rain sensor with digital output for irrigation override, (3) pH sensor (0-14 range, $\pm$0.1 accuracy), and (4) DHT22 temperature-humidity sensor ($\pm$0.5°C, $\pm$2-5\% RH). Table \ref{tab:hardware} provides the hardware specifications.
 
 \begin{table}[htbp]
 \caption{Hardware Component Specifications}
@@ -224,162 +161,59 @@ LEDs (4×) & Red/Green/Blue/Yellow, 220$\Omega$ current limiting, $\sim$8mA each
 \end{tabular}
 \end{table}
 
-\subsubsection{Output Devices}
-
-\textbf{16$\times$2 Character LCD Display:} I2C-interfaced display (address 0x27) presents real-time system status. Line 1 shows moisture percentage and temperature (``M:XX\% T:XX$^{\circ}$C''). Line 2 displays humidity and pump status (``H:XX\% P:ON/OFF''). The I2C interface reduces wiring complexity from 16 pins to 4 pins (VCC, GND, SDA, SCL).
-
-\textbf{LED Status Indicators:} Four LEDs provide at-a-glance system status:
-\begin{itemize}
-    \item Red (GPIO 26): Pump active/irrigation in progress
-    \item Green (GPIO 27): System healthy and WiFi connected
-    \item Blue (GPIO 25): Cloud data upload in progress
-    \item Yellow (GPIO 33): Warning condition (low moisture/pH out of range)
-\end{itemize}
-
-Each LED connects through a 220$\Omega$ current-limiting resistor, drawing approximately 8mA per LED for total indicator current of 32mA, well within safe GPIO limits.
-
-\textbf{Relay Module (Future):} The demonstration version uses LED indicators only. Production deployment will include a 5V relay module (optocoupler-isolated) for controlling 12V water pump or solenoid valve, supporting loads up to 10A at 250VAC.
+Output devices include a 16$\times$2 I2C LCD display showing real-time status and four LED indicators: Red (pump active), Green (WiFi connected), Blue (cloud upload), and Yellow (warning conditions).
 
 \subsection{Software Architecture}
 
-The firmware implements a modular, event-driven architecture using the Arduino framework. Core modules include:
-
-\textbf{1. Data Acquisition Module:} Reads all sensors at 2-second intervals, applies calibration mappings, performs range validation, and populates the \texttt{SensorData} structure.
-
-\textbf{2. Irrigation Control Module:} Implements hysteresis-based decision algorithm with multi-parameter priority logic (detailed in Section IV-C).
-
-\textbf{3. WiFi Communication Module:} Manages connection establishment, automatic reconnection on failure, and maintains RSSI monitoring.
-
-\textbf{4. Display Management Module:} Updates LCD at 1 Hz refresh rate and controls LED states based on system conditions.
-
-\textbf{5. Cloud Upload Module:} Serializes sensor data to JSON format and performs HTTP POST requests every 30 seconds.
-
-Essential libraries utilized include: WiFi (network connectivity), Wire (I2C communication), LiquidCrystal\_I2C (LCD control), DHT (DHT22 sensor), HTTPClient (HTTP requests), and ArduinoJson (JSON serialization).
+The firmware implements a modular architecture using Arduino framework with five core modules: data acquisition (2-second sensor intervals), irrigation control (hysteresis-based), WiFi communication (auto-reconnection), display management (1 Hz LCD refresh), and cloud upload (30-second JSON POST).
 
 \subsection{Communication Architecture}
 
-\subsubsection{Local Communication}
-
-\textbf{I2C Protocol:} Operates at standard 100 kHz clock frequency for LCD communication. SDA (GPIO 21) carries bidirectional data, while SCL (GPIO 22) provides clock signal. The 7-bit addressing scheme supports up to 127 devices on a single bus, enabling future sensor expansion.
-
-\textbf{ADC Interface:} ESP32's 12-bit SAR ADC converts 0-3.3V analog signals to digital values 0-4095. ADC1 channels (GPIO 34, 35, 36) are used exclusively as ADC2 conflicts with WiFi operation. Non-linear characteristics are compensated through calibration curves.
-
-\subsubsection{Network Communication}
-
-WiFi connectivity operates in station mode (STA), connecting to existing access points. The system implements automatic reconnection with exponential backoff on connection failures. Data transmission uses HTTP REST API with JSON payload format:
-
-\begin{verbatim}
-{
-  "deviceId": "ESP32_SMART_IRRIGATION_001",
-  "timestamp": <milliseconds>,
-  "soilMoisture": <0-100%>,
-  "rainDetected": <true/false>,
-  "phValue": <0-14>,
-  "temperature": <°C>,
-  "humidity": <%>,
-  "pumpActive": <true/false>,
-  "systemStatus": <string>
-}
-\end{verbatim}
-
-Figure \ref{fig:network} illustrates the complete network communication architecture from field device to cloud server.
-
-% Figure placeholder
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{fig_network_communication.png}}
-\caption{Network communication architecture showing data flow through WiFi to cloud server with JSON payload format. Upload frequency: 30 seconds.}
-\label{fig:network}
-\end{figure}
-
-\subsection{Power Management}
-
-The current demonstration version operates from USB 5V power (laptop or power bank), consuming approximately 1.8W (360mA at 5V). Power distribution includes: ESP32 core ($\sim$180mA), sensors ($\sim$50mA), LCD ($\sim$30mA), and LEDs ($\sim$32mA). The ESP32's onboard 3.3V LDO regulator provides stable logic-level voltage.
-
-For field deployment, planned enhancements include: (1) 12V lead-acid battery for pump operation, (2) 20W solar panel with charge controller for energy independence, and (3) ESP32 deep sleep mode reducing idle current to $<$10$\mu$A between sensor readings.
-
-% ====================================================================
-% IV. METHODOLOGY AND IMPLEMENTATION
-% ====================================================================
+Local communication uses I2C (100 kHz) for LCD and ADC1 channels (GPIO 34, 35, 36) for analog sensors, avoiding ADC2 WiFi conflicts. Network communication operates in WiFi station mode with automatic reconnection and HTTP REST API transmitting JSON payloads every 30 seconds. The system consumes approximately 1.8W from USB 5V power.
 
 \section{Methodology and Implementation}
 
-\subsection{Pin Configuration and Hardware Interface}
+\subsection{Hardware Configuration}
 
-GPIO pin allocation follows ESP32 design guidelines, using ADC1 channels exclusively to avoid WiFi conflicts and reserving strapping pins for proper boot sequence. Table \ref{tab:pinmap} details the complete pin mapping.
+GPIO pin allocation follows ESP32 design guidelines, using ADC1 channels exclusively to avoid WiFi conflicts. Table \ref{tab:pinmap} details the complete pin mapping.
 
 \begin{table}[htbp]
 \caption{ESP32 GPIO Pin Mapping}
 \label{tab:pinmap}
 \centering
 \footnotesize
-\begin{tabular}{|l|l|l|p{2.2cm}|}
+\begin{tabular}{|l|l|p{2.5cm}|}
 \hline
-\textbf{GPIO} & \textbf{Function} & \textbf{Type} & \textbf{Device} \\
+\textbf{GPIO} & \textbf{Type} & \textbf{Device} \\
 \hline
-34 & ADC1\_CH6 & Analog In & Soil Moisture \\
-35 & ADC1\_CH7 & Digital In & Rain Sensor \\
-36 & ADC1\_CH0 & Analog In & pH Sensor \\
-4 & Digital I/O & Digital I/O & DHT22 Data \\
+34 & ADC1\_CH6 & Soil Moisture \\
 \hline
-21 & I2C SDA & I2C & LCD Data \\
-22 & I2C SCL & I2C & LCD Clock \\
+35 & Digital In & Rain Sensor \\
 \hline
-26 & Digital Out & Output & LED Red \\
-27 & Digital Out & Output & LED Green \\
-25 & Digital Out & Output & LED Blue \\
-33 & Digital Out & Output & LED Yellow \\
+36 & ADC1\_CH0 & pH Sensor \\
 \hline
-5V & Power & Power & Sensor VCC \\
-GND & Ground & Ground & Common GND \\
+4 & Digital I/O & DHT22 Data \\
+\hline
+21/22 & I2C SDA/SCL & LCD Display \\
+\hline
+26, 27, 25, 33 & Digital Out & LEDs (R/G/B/Y) \\
 \hline
 \end{tabular}
 \end{table}
 
-All analog sensors connect to ADC1 channels (GPIO 34, 35, 36) to maintain WiFi compatibility. Digital sensors utilize GPIO pins with internal pull-up resistors where applicable. I2C communication employs hardware-supported SDA/SCL pins for reliable operation.
+All analog sensors connect to ADC1 channels to maintain WiFi compatibility. I2C communication employs hardware-supported SDA/SCL pins for reliable operation.
 
-\subsection{Sensor Calibration Methodology}
+\subsection{Sensor Calibration}
 
-Accurate sensor calibration ensures reliable environmental monitoring and correct irrigation decisions.
-
-\subsubsection{Soil Moisture Calibration}
-
-Two-point calibration establishes ADC value-to-moisture percentage mapping:
-
-\textbf{Dry Soil Reference (0\%):} Sensor inserted in oven-dried soil ($105^{\circ}$C for 24 hours), yielding ADC reading $\sim$3500.
-
-\textbf{Saturated Soil Reference (100\%):} Sensor immersed in water-saturated soil (field capacity), yielding ADC reading $\sim$1000.
-
-Linear mapping converts ADC values to moisture percentage:
+Soil moisture uses two-point calibration with linear mapping:
 \begin{equation}
 M = \frac{ADC_{dry} - ADC_{measured}}{ADC_{dry} - ADC_{wet}} \times 100
 \end{equation}
-
-where $M$ = moisture percentage, $ADC_{dry}$ = 3500, $ADC_{wet}$ = 1000.
-
-\subsubsection{pH Sensor Calibration}
-
-Three-point calibration using buffer solutions (pH 4.0, 7.0, 10.0) establishes voltage-to-pH conversion. Temperature compensation adjusts for pH electrode temperature dependency ($\sim$0.03 pH/°C). Calibration coefficients are stored in firmware and validated weekly against reference buffers.
-
-\subsubsection{DHT22 Verification}
-
-DHT22 sensors include factory calibration. Verification against NIST-traceable reference thermometer confirms accuracy within $\pm$0.5°C. Humidity verification uses saturated salt solutions providing known relative humidity levels (NaCl: 75\% RH at 25°C).
+where $ADC_{dry}$ = 3500 and $ADC_{wet}$ = 1000. pH sensor uses three-point calibration (pH 4.0, 7.0, 10.0) with temperature compensation. DHT22 factory calibration verified against reference instruments.
 
 \subsection{Irrigation Control Algorithm}
 
-The core innovation lies in the hysteresis-based control algorithm preventing rapid pump cycling observed in conventional single-threshold systems.
-
-\subsubsection{Hysteresis Logic}
-
-Traditional threshold controllers (e.g., activate pump when moisture $<$ 45\%, deactivate when moisture $>$ 45\%) suffer from oscillation near the threshold. Minor sensor noise or small moisture fluctuations cause continuous pump switching, reducing equipment lifespan and energy efficiency.
-
-Hysteresis control implements separate activation and deactivation thresholds:
-\begin{itemize}
-    \item \textbf{Lower threshold:} 30\% (pump activation point)
-    \item \textbf{Upper threshold:} 60\% (pump deactivation point)
-    \item \textbf{Hysteresis zone:} 30-60\% (maintain current state)
-\end{itemize}
-
-The state machine operates as follows:
+The core innovation is the hysteresis-based control algorithm preventing rapid pump cycling. Traditional single-threshold controllers suffer from oscillation near the threshold. Hysteresis control implements separate thresholds:
 \begin{equation}
 P(t) = \begin{cases}
 1 \text{ (ON)} & \text{if } M(t) < 30\% \\
@@ -388,434 +222,172 @@ P(t-1) \text{ (HOLD)} & \text{if } 30\% \leq M(t) \leq 60\%
 \end{cases}
 \end{equation}
 
-where $P(t)$ = pump state at time $t$, $M(t)$ = moisture at time $t$.
+The 30\% hysteresis width accommodates sensor uncertainty ($\pm$5\%) while preventing oscillation. Figure \ref{fig:hysteresis} visualizes this behavior.
 
-This 30\% hysteresis width accommodates sensor uncertainty ($\pm$5\%) while preventing oscillation. Figure \ref{fig:hysteresis} visualizes the control behavior over time.
-
-% Figure placeholder
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{fig_hysteresis_control.png}}
-\caption{Hysteresis control visualization showing soil moisture variation with dual thresholds. The 30-60\% zone maintains current state, reducing pump cycles by 75-80\% versus single-threshold control.}
+\caption{Hysteresis control with dual thresholds (30-60\%) reducing pump cycles by 75-80\% versus single-threshold control.}
 \label{fig:hysteresis}
 \end{figure}
 
-\subsubsection{Multi-Parameter Decision Logic}
+Multi-parameter decision logic uses priority hierarchy: (P1) rain detection forces pump OFF regardless of moisture level, overriding all other conditions for water conservation, (P2) moisture thresholds control irrigation using hysteresis logic, and (P3) pH out of range (5.5-7.5) or temperature exceeding 35°C triggers warning LED without affecting pump operation. Figure \ref{fig:flowchart} shows the control flowchart.
 
-Beyond moisture-based control, the algorithm incorporates multi-parameter decision making with priority hierarchy:
-
-\textbf{Priority 1 - Rain Detection (Highest):} If rain detected, force pump OFF regardless of moisture level. Overrides all other conditions for water conservation.
-
-\textbf{Priority 2 - Moisture Thresholds:} Apply hysteresis-based moisture control as described above.
-
-\textbf{Priority 3 - Warning Conditions (Non-blocking):} pH out of range (5.5-7.5) or temperature $>$35°C triggers yellow LED warning but does not affect pump operation. Alerts user to conditions requiring attention.
-
-Figure \ref{fig:flowchart} presents the complete control algorithm flowchart.
-
-% Figure placeholder
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{fig_control_flowchart.png}}
-\caption{Control algorithm flowchart implementing priority-based decision logic: rain override (P1), hysteresis-based moisture control (P2), and warning generation (P3).}
+\caption{Control algorithm flowchart with priority-based decision logic.}
 \label{fig:flowchart}
 \end{figure}
 
-Table \ref{tab:thresholds} provides rationale for threshold selection based on agronomic and engineering considerations.
+Table \ref{tab:thresholds} provides threshold values and their agronomic justification.
 
 \begin{table}[htbp]
-\caption{Control Threshold Selection and Justification}
+\caption{Control Threshold Selection}
 \label{tab:thresholds}
 \centering
 \footnotesize
-\begin{tabular}{|l|l|p{4.2cm}|}
+\begin{tabular}{|l|l|p{3.8cm}|}
 \hline
 \textbf{Parameter} & \textbf{Value} & \textbf{Justification} \\
 \hline
-Moisture Low & 30\% & Permanent wilting point for most crops, irrigation required \\
+Moisture Low & 30\% & Permanent wilting point \\
 \hline
-Moisture High & 60\% & Near field capacity, prevents over-watering \\
+Moisture High & 60\% & Near field capacity \\
 \hline
-Hysteresis & 30\% & Prevents cycling, accommodates $\pm$5\% sensor accuracy \\
+pH Range & 5.5-7.5 & Optimal nutrient availability \\
 \hline
-pH Min & 5.5 & Lower limit for nutrient availability \\
+Temp Warning & 35°C & Crop heat stress threshold \\
 \hline
-pH Max & 7.5 & Upper limit for iron/zinc availability \\
+Sensor Interval & 2 s & Balance responsiveness/stability \\
 \hline
-Temp Warning & 35°C & Heat stress threshold for crops \\
-\hline
-Sensor Interval & 2 s & Balance responsiveness and stability \\
-\hline
-Upload Interval & 30 s & Adequate resolution, moderate bandwidth \\
+Upload Interval & 30 s & Adequate resolution \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Data Acquisition and Processing}
-
-Sensor readings occur every 2 seconds in the main control loop. The acquisition sequence implements temporal separation to minimize ADC settling issues:
-
-\begin{enumerate}
-    \item Read soil moisture (ADC, 10ms settling)
-    \item Read rain sensor (digital, immediate)
-    \item Read pH sensor (ADC, 10ms settling)
-    \item Read DHT22 (serial protocol, 250ms duration)
-\end{enumerate}
-
-Data validation checks include: (1) NaN detection for DHT22 failures, (2) range limits (moisture: 0-100\%, pH: 0-14, temperature: -40 to 80°C), and (3) rate-of-change filtering to reject spurious spikes exceeding physically plausible rates.
-
-Valid readings populate the \texttt{SensorData} structure:
-\begin{verbatim}
-struct SensorData {
-    float soilMoisture;  // 0-100%
-    bool rainDetected;   // true/false
-    float phValue;       // 0-14
-    float temperature;   // degrees C
-    float humidity;      // 0-100% RH
-    bool pumpActive;     // ON/OFF state
-    String systemStatus; // IRRIGATING/
-                        // MONITORING/RAIN_STOP
-    unsigned long timestamp; // milliseconds
-};
-\end{verbatim}
-
-\subsection{User Interface Implementation}
-
-\subsubsection{LCD Display}
-
-The 16$\times$2 LCD updates at 1 Hz providing human-readable status. Line 1 format: ``M:XX\% T:XX$^{\circ}$C'' (moisture and temperature). Line 2 format: ``H:XX\% P:ON/OFF'' (humidity and pump status). During warnings, Line 2 alternates between normal display and warning message (``pH!!/HOT!!'').
-
-\subsubsection{LED Indicators}
-
-LED states provide at-a-glance system health:
-\begin{itemize}
-    \item \textbf{Red LED:} ON when pump active (irrigation in progress), OFF when idle
-    \item \textbf{Green LED:} Solid ON when WiFi connected, slow blink during connection attempt, OFF if disconnected
-    \item \textbf{Blue LED:} Brief 200ms blink during each cloud upload
-    \item \textbf{Yellow LED:} ON during warning conditions (low moisture, pH out of range, high temperature)
-\end{itemize}
-
-\subsubsection{Serial Monitor}
-
-Detailed logging to serial port (115200 baud) outputs all sensor readings, pump decisions, and system events. Essential for debugging and calibration verification. Example log:
-\begin{verbatim}
-[2024-01-18 10:30:45] Moisture: 28%
-[2024-01-18 10:30:45] Rain: NO
-[2024-01-18 10:30:45] pH: 6.5
-[2024-01-18 10:30:45] Temp: 25C Humid: 65%
-[2024-01-18 10:30:45] DECISION: PUMP ON
-                      (M < 30%)
-[2024-01-18 10:30:45] Status: IRRIGATING
-\end{verbatim}
-
-% ====================================================================
-% V. SYSTEM INTEGRATION AND TESTING
-% ====================================================================
-
 \section{System Integration and Testing}
 
-\subsection{Integration Approach}
-
-System integration followed a bottom-up methodology: (1) individual component testing, (2) subsystem integration, (3) full system validation. This incremental approach enabled early fault detection and simplified debugging.
-
-\textbf{Component-Level Testing:} Each sensor verified independently through direct ADC reading observation. LED circuits tested for correct polarity and current limiting. LCD communication validated using I2C scanner and test messages.
-
-\textbf{Subsystem Integration:} Sensors integrated with data acquisition module, validating calibration mappings. Control algorithm tested with simulated sensor inputs before hardware connection. WiFi module tested separately before integrating cloud upload.
-
-\textbf{System-Level Integration:} All components operated simultaneously, verifying no resource conflicts, timing interference, or power supply issues.
-
-\subsection{Testing Methodology}
-
-\subsubsection{Unit Testing}
-
-Individual component validation confirmed:
-\begin{itemize}
-    \item Soil moisture sensor: Readings stable in dry/wet soil
-    \item Rain sensor: Reliable wet/dry detection
-    \item pH sensor: Accuracy within $\pm$0.1 pH of buffer solutions
-    \item DHT22: Temperature within $\pm$0.5°C of reference thermometer
-    \item LCD: Clear display with correct I2C address (0x27)
-    \item LEDs: Proper polarity, brightness, no flicker
-    \item WiFi: Successful connection to test network
-\end{itemize}
-
-\subsubsection{Integration Testing}
-
-Combined subsystem testing verified:
-\begin{itemize}
-    \item Sensor reading pipeline: All sensors read successfully every 2 seconds without conflicts
-    \item Display synchronization: LCD and LEDs update consistently with sensor states
-    \item Network communication: HTTP POST requests complete successfully with valid JSON
-    \item Control algorithm: Correct pump decisions based on sensor inputs
-\end{itemize}
-
-\subsubsection{System Testing}
-
-End-to-end scenarios validated complete functionality including multi-parameter decision logic and error recovery.
+System integration followed a bottom-up methodology: (1) individual component testing, (2) subsystem integration, and (3) full system validation. Component-level testing verified each sensor independently through direct ADC reading observation. Subsystem integration validated calibration mappings and control algorithm with simulated inputs before hardware connection.
 
 \subsection{Test Scenarios and Validation}
 
-Table \ref{tab:testresults} summarizes test scenarios and outcomes. Each scenario was repeated 5 times to confirm consistency.
+Table \ref{tab:testresults} summarizes key test scenarios, each repeated 5 times to confirm consistency.
 
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \caption{System Test Results Summary}
 \label{tab:testresults}
 \centering
-\begin{tabular}{|l|l|l|l|}
+\footnotesize
+\begin{tabular}{|p{2.5cm}|p{2.8cm}|p{1.2cm}|}
 \hline
-\textbf{Test Scenario} & \textbf{Expected Behavior} & \textbf{Observed Result} & \textbf{Status} \\
+\textbf{Test Scenario} & \textbf{Result} & \textbf{Status} \\
 \hline
-Dry soil ($<$30\% moisture) & Pump activates, Red LED ON, LCD shows "P:ON" & Activation in 2-3s, all indicators correct & PASS \\
+Dry soil ($<$30\%) & Pump ON in 2-3s & PASS \\
 \hline
-Wet soil ($>$60\% moisture) & Pump deactivates, Red LED OFF, LCD shows "P:OFF" & Deactivation in 2-3s, status updated & PASS \\
+Wet soil ($>$60\%) & Pump OFF in 2-3s & PASS \\
 \hline
-Hysteresis zone (30-60\%) & Pump maintains current state, no switching & State maintained for 5 min test, 0 toggles & PASS \\
+Hysteresis (30-60\%) & 0 toggles in 5 min & PASS \\
 \hline
-Rain detection + low moisture & Pump remains OFF, status "RAIN\_STOP" & Override confirmed, Yellow LED warning & PASS \\
+Rain override & Pump OFF despite low moisture & PASS \\
 \hline
-pH out of range (pH $<$ 5.5) & Yellow LED ON, LCD warning, pump unaffected & Warning displayed, irrigation continues & PASS \\
+pH warning & Yellow LED, pump unaffected & PASS \\
 \hline
-High temperature ($>$35°C) & Yellow LED ON, LCD "HOT!!" message & Warning triggered at 35.2°C & PASS \\
+WiFi connection & Connected in 8s & PASS \\
 \hline
-WiFi connection & Green LED ON, successful HTTP POST & Connected in 8s, data uploaded & PASS \\
+WiFi reconnection & Auto-reconnect in 15s & PASS \\
 \hline
-WiFi reconnection & Auto-reconnect after disconnect & Reconnected within 15s & PASS \\
+Cloud upload & 100\% success (60/60) & PASS \\
 \hline
-Cloud upload (30s interval) & JSON POST every 30$\pm$1s & Upload timing: 30.2s average & PASS \\
-\hline
-System uptime (30 min) & Stable operation, no crashes & Zero resets, continuous operation & PASS \\
+System uptime & 30 min stable operation & PASS \\
 \hline
 \end{tabular}
-\end{table*}
+\end{table}
 
-\textbf{Scenario 1 - Low Moisture Detection:} Soil moisture sensor placed in dry soil (measured 28\%). System responded within 2-3 seconds: Red LED activated, LCD displayed "M:28\% T:25°C" on Line 1 and "H:65\% P:ON" on Line 2. Serial log confirmed decision logic: "PUMP ON (M $<$ 30\%)". Response time consistent across 5 trials ($\mu$ = 2.4s, $\sigma$ = 0.3s).
+\textbf{Hysteresis Zone Validation:} Moisture manually varied between 35-55\% by gradually adding/removing water. Pump state remained constant for entire 5-minute test period with zero unintended toggles, contrasting with single-threshold system exhibiting 12 toggles in same period.
 
-\textbf{Scenario 2 - Adequate Moisture:} Sensor transferred to wet soil (measured 68\%). System deactivated pump within 2-3 seconds, Red LED turned OFF, LCD updated to "P:OFF". Demonstrates correct upper threshold response.
+\textbf{Rain Override Testing:} With soil moisture at 25\% (below threshold), water applied to rain sensor. System immediately set pump OFF, overriding low moisture condition, confirming priority logic where rain detection supersedes moisture thresholds.
 
-\textbf{Scenario 3 - Hysteresis Zone Validation:} Moisture manually varied between 35-55\% by adding/removing water gradually. Pump state remained constant (as initially set before entering zone) for entire 5-minute test period. Zero unintended toggles confirmed hysteresis prevents oscillation. This contrasts with single-threshold system tested for comparison, which exhibited 12 toggles in same period.
+\textbf{WiFi and Cloud Upload:} Green LED illuminated after 8-second connection time. Blue LED blinked every 30 seconds during HTTP POST. Server logs confirmed JSON payload reception. Three consecutive disconnection-reconnection cycles confirmed automatic recovery.
 
-\textbf{Scenario 4 - Rain Override:} With soil moisture at 25\% (below threshold), water applied to rain sensor. System immediately set pump OFF, overriding low moisture condition. LCD displayed "RAIN" status, Yellow LED activated as warning. Confirms priority logic: rain detection (P1) supersedes moisture thresholds (P2).
-
-\textbf{Scenario 5 - WiFi and Cloud Upload:} Connected to test WiFi network (SSID: "TestNetwork"). Green LED illuminated solid after 8-second connection time. Blue LED blinked every 30 seconds during HTTP POST. Server logs confirmed JSON payload reception with all sensor values. Average upload latency: 245ms. Three consecutive disconnection-reconnection cycles confirmed automatic recovery (average reconnect time: 15 seconds).
-
-\subsection{System Performance Metrics}
+\subsection{Performance Metrics}
 
 Quantitative performance assessment:
 \begin{itemize}
-    \item \textbf{Response Time:} Sensor reading to pump action: 2.4$\pm$0.3 seconds
-    \item \textbf{Sensor Accuracy:} Moisture: $\pm$5\%, pH: $\pm$0.1, Temperature: $\pm$0.5°C, Humidity: $\pm$3\%
-    \item \textbf{WiFi Range:} Stable connection up to 30-50 meters (indoor environment, through 2 walls)
-    \item \textbf{Power Consumption:} Total 1.8W (ESP32: 0.6W, Sensors: 0.25W, LCD: 0.15W, LEDs: 0.8W at 5V supply)
-    \item \textbf{System Uptime:} 99.2\% during 30-minute continuous operation test (1 brief WiFi reconnection event)
-    \item \textbf{Cloud Upload Success Rate:} 100\% (60/60 uploads successful)
-    \item \textbf{Pump Cycle Reduction:} 75-80\% fewer cycles versus single-threshold control (hysteresis validation test)
+    \item \textbf{Response Time:} 2.4$\pm$0.3 seconds
+    \item \textbf{Sensor Accuracy:} Moisture $\pm$5\%, pH $\pm$0.1, Temperature $\pm$0.5°C
+    \item \textbf{WiFi Range:} 30-50 meters indoor
+    \item \textbf{Power Consumption:} 1.8W total
+    \item \textbf{System Uptime:} 99.2\%
+    \item \textbf{Pump Cycle Reduction:} 75-80\% versus single-threshold
 \end{itemize}
-
-% ====================================================================
-% VI. DISCUSSION
-% ====================================================================
 
 \section{Discussion}
 
-\subsection{System Capabilities}
-
-The implemented system successfully demonstrates comprehensive precision irrigation capabilities through multi-sensor environmental monitoring, intelligent automated decision-making, real-time local feedback, and cloud connectivity for remote access. The modular architecture facilitates maintenance and upgrades.
-
 \subsection{Advantages Over Existing Systems}
-
-\subsubsection{Hysteresis Control Benefits}
 
 The dual-threshold control algorithm provides several critical advantages:
 \begin{enumerate}
     \item \textbf{Eliminates oscillation:} Zero unintended toggles in hysteresis zone testing versus 12 toggles in single-threshold comparison
-    \item \textbf{Extends equipment life:} 75-80\% reduction in pump switching reduces mechanical wear, relay contact degradation, and motor starter stress
-    \item \textbf{Improves energy efficiency:} Fewer startup events (highest power demand) and longer continuous run times optimize pump efficiency curves
+    \item \textbf{Extends equipment life:} 75-80\% reduction in pump switching reduces mechanical wear and relay contact degradation
+    \item \textbf{Improves energy efficiency:} Fewer startup events (highest power demand) and longer continuous run times optimize pump efficiency
     \item \textbf{Stable operation:} Predictable behavior immune to minor sensor noise or temporary fluctuations
 \end{enumerate}
 
-\subsubsection{Multi-Parameter Integration}
-
-Unlike single-sensor systems, simultaneous monitoring of moisture, rain, pH, and temperature enables:
+Multi-parameter integration enables comprehensive field assessment:
 \begin{itemize}
-    \item \textbf{Water conservation:} Rain override prevents unnecessary irrigation
+    \item \textbf{Water conservation:} Rain override prevents unnecessary irrigation during rainfall
     \item \textbf{Soil health monitoring:} pH tracking alerts to nutrient availability issues
     \item \textbf{Crop stress detection:} Temperature warnings indicate heat stress risk
-    \item \textbf{Comprehensive assessment:} Multiple parameters provide holistic field condition understanding
 \end{itemize}
 
-\subsubsection{Cost-Effectiveness}
-
-Total component cost ($<$\$50) represents 60-80\% reduction versus commercial systems (\$200-500). Affordability enables adoption by small-scale farmers and educational institutions. Cost breakdown: ESP32 (\$10), sensors (\$25), LCD (\$3), LEDs and components (\$5), miscellaneous (\$7).
-
-\subsubsection{Flexibility and Scalability}
-
-The modular design supports:
-\begin{itemize}
-    \item Easy component replacement (standard interfaces)
-    \item Threshold customization (configurable firmware constants)
-    \item Multi-zone expansion (GPIO pins available for 3-4 additional soil moisture sensors)
-    \item Alternative sensor integration (NPK, light intensity, EC)
-    \item Multiple communication options (current WiFi, future GSM/LoRa)
-\end{itemize}
+Total component cost below \$50 represents 60-80\% reduction versus commercial systems (\$200-500). Cost breakdown: ESP32 (\$10), sensors (\$25), LCD (\$3), LEDs and components (\$5), miscellaneous (\$7). This affordability enables adoption by small-scale farmers and educational institutions.
 
 \subsection{Limitations and Challenges}
 
-Current implementation exhibits several limitations requiring consideration:
+Technical limitations include:
+\begin{itemize}
+    \item \textbf{WiFi Range:} 2.4 GHz WiFi limited to 30-50 meters indoor range. Mitigation: WiFi extenders, mesh networks, or LoRa modules
+    \item \textbf{Internet Dependency:} Cloud features require stable connection. Local control operates independently during outages
+    \item \textbf{Sensor Calibration:} Site-specific calibration required for different soil types
+    \item \textbf{pH Sensor Drift:} Low-cost pH sensors require weekly recalibration
+\end{itemize}
 
-\subsubsection{Technical Limitations}
-
-\textbf{WiFi Range:} 2.4 GHz WiFi limited to 30-50 meters indoor range, potentially insufficient for large fields. Mitigation: WiFi extenders, mesh networks, or alternative protocols (LoRa, cellular).
-
-\textbf{Internet Dependency:} Cloud features require stable internet connection. Local control operates independently, but remote monitoring fails during outages. Mitigation: Local data logging to SD card, offline operation mode.
-
-\textbf{Sensor Calibration:} Each deployment requires site-specific calibration for soil moisture and pH sensors due to soil type variations. Mitigation: Simplified calibration procedures, pre-calibrated sensor modules.
-
-\textbf{pH Sensor Accuracy:} Low-cost pH sensors exhibit drift over time, requiring periodic recalibration (weekly recommended). Mitigation: More stable (expensive) pH probes or alternative soil testing methods.
-
-\subsubsection{Implementation Challenges}
-
-\textbf{Demo Version Limitations:} Current prototype uses LED indicators instead of actual pump control relay. Production deployment requires relay module addition and safety interlocks (manual override, emergency stop).
-
-\textbf{Power Supply:} USB-powered demo unsuitable for field deployment. Required additions: 12V battery, solar panel, charge controller (estimated \$60 additional cost).
-
-\textbf{Environmental Protection:} Breadboard assembly lacks weatherproofing. Field deployment needs waterproof enclosure (IP65 rated, estimated \$15).
-
-\textbf{I2C Address Conflicts:} LCD modules from different manufacturers may use 0x27 or 0x3F addresses. Firmware includes detection logic but may require manual configuration.
+Implementation challenges include demo version limitations (LED indicators instead of relay), USB power unsuitable for field deployment, and lack of weatherproofing. Production deployment requires relay module, IP65 enclosure (\$15), and solar power system (\$60).
 
 \subsection{Practical Applications}
 
-The developed system suits various precision agriculture applications:
-
-\begin{itemize}
-    \item \textbf{Home Gardens:} Small-scale vegetable gardens, flower beds, lawn irrigation
-    \item \textbf{Greenhouses:} Controlled environment agriculture with existing WiFi infrastructure
-    \item \textbf{Research Plots:} Agricultural research requiring precise irrigation control and data logging
-    \item \textbf{Educational Demonstrations:} Teaching IoT, sensors, control algorithms, sustainable agriculture
-    \item \textbf{Terrace/Rooftop Gardens:} Urban farming with limited water availability
-    \item \textbf{Small-Scale Commercial:} Farms up to 1-2 acres with centralized WiFi access
-\end{itemize}
-
-Scalability to larger operations requires multi-node deployments with mesh networking or cellular connectivity. Each node can control 1-4 irrigation zones, with central server aggregating data from multiple nodes across extensive farmland.
-
-% ====================================================================
-% VII. FUTURE WORK
-% ====================================================================
+The system suits various precision agriculture applications including home gardens, greenhouses with existing WiFi infrastructure, agricultural research plots requiring precise control and data logging, educational demonstrations for IoT and sustainable agriculture, terrace/rooftop urban farming, and small-scale commercial farms up to 1-2 acres with centralized WiFi access.
 
 \section{Future Work}
 
-Several enhancements will improve system capabilities and expand deployment scenarios:
+Several enhancements will improve system capabilities:
 
 \subsection{Hardware Enhancements}
-
-\subsubsection{Near-Term Improvements (1-3 months)}
-
-\begin{itemize}
-    \item \textbf{Relay and Pump Integration:} Add 5V relay module (\$6) and 12V water pump (\$15) for actual irrigation control beyond LED indication
-    \item \textbf{Waterproof Enclosure:} IP65-rated enclosure (\$15) protecting electronics from weather, dust, and moisture
-    \item \textbf{Battery and Solar Power:} 12V 7Ah lead-acid battery (\$20) and 20W solar panel (\$30) with charge controller (\$10) for off-grid operation
-    \item \textbf{SD Card Data Logging:} MicroSD module (\$2) for local data backup during internet outages
-    \item \textbf{Manual Override:} Physical switch bypassing automated control for manual operation and emergency shutoff
-\end{itemize}
-
-\subsubsection{Long-Term Enhancements (6-12 months)}
-
-\begin{itemize}
-    \item \textbf{Multi-Zone Control:} Expand to 4-8 irrigation zones with individual soil moisture sensors and solenoid valves
-    \item \textbf{NPK Sensor:} Nitrogen-phosphorus-potassium sensor (\$40) for comprehensive soil fertility monitoring
-    \item \textbf{GSM/LoRa Module:} Cellular (SIM800L, \$15) or LoRa (\$12) communication for remote field coverage without WiFi
-    \item \textbf{Camera Module:} ESP32-CAM (\$8) for crop visual monitoring and disease detection
-    \item \textbf{Flow Meter:} Water flow sensor (\$5) quantifying exact water usage for efficiency analysis
-    \item \textbf{Soil Electrical Conductivity:} EC sensor (\$15) measuring nutrient solution concentration in hydroponic applications
-    \item \textbf{Light Intensity Sensor:} Photosensor (\$3) for PAR (Photosynthetically Active Radiation) monitoring in greenhouses
-\end{itemize}
-
-Table \ref{tab:roadmap} summarizes the enhancement roadmap with timeline and impact assessment.
-
-\begin{table}[htbp]
-\caption{Future Enhancement Roadmap}
-\label{tab:roadmap}
-\centering
-\footnotesize
-\begin{tabular}{|p{3.5cm}|p{1.2cm}|p{2.5cm}|}
-\hline
-\textbf{Enhancement} & \textbf{Timeline} & \textbf{Impact} \\
-\hline
-Relay + Pump & 1 month & High (enables actual control) \\
-\hline
-Waterproof Enclosure & 1 month & High (field deployment) \\
-\hline
-Battery + Solar Panel & 2 months & High (off-grid operation) \\
-\hline
-SD Card Logging & 1 month & Medium (data backup) \\
-\hline
-Multi-zone (4 zones) & 3 months & High (scalability) \\
-\hline
-NPK Sensor & 3 months & Medium (soil fertility) \\
-\hline
-GSM Module (SIM800L) & 2 months & Medium (remote areas) \\
-\hline
-Camera Module & 6 months & Low (visual monitoring) \\
-\hline
-\end{tabular}
-\end{table}
+Near-term improvements include: (1) relay module and 12V water pump for actual irrigation control, (2) IP65-rated waterproof enclosure for field deployment, (3) 12V battery with 20W solar panel and charge controller for off-grid operation, and (4) SD card module for local data backup during internet outages.
 
 \subsection{Software Improvements}
-
-\begin{itemize}
-    \item \textbf{Machine Learning Predictions:} Train models on historical data to predict irrigation needs based on weather forecasts, reducing reactive to proactive control
-    \item \textbf{Weather API Integration:} Incorporate forecast data from OpenWeatherMap API to preemptively adjust irrigation schedules before rain events
-    \item \textbf{Mobile Application:} Develop iOS/Android app (React Native/Flutter) for remote monitoring, manual control, and push notifications
-    \item \textbf{Web Dashboard:} Browser-based interface for data visualization, historical trends, and system configuration
-    \item \textbf{Advanced Analytics:} Water usage efficiency metrics, crop growth correlation analysis, anomaly detection algorithms
-    \item \textbf{OTA Firmware Updates:} Over-the-air update capability for remote firmware upgrades without physical access
-    \item \textbf{Multi-Crop Profiles:} Preset threshold configurations optimized for different crops (tomatoes, lettuce, etc.)
-\end{itemize}
+Long-term enhancements include: (1) multi-zone control supporting 4-8 irrigation zones with individual sensors, (2) GSM/LoRa modules for remote field coverage without WiFi, (3) machine learning predictions using weather forecast APIs, (4) mobile application for remote monitoring and push notifications, and (5) web dashboard for data visualization and historical analysis.
 
 \subsection{Research Extensions}
-
-Further research opportunities include:
-
-\begin{itemize}
-    \item \textbf{Crop-Specific Optimization:} Field trials determining optimal moisture thresholds for various crops and growth stages
-    \item \textbf{Soil Type Adaptation:} Calibration procedures and threshold adjustments for clay, loam, sandy soils
-    \item \textbf{Drip Irrigation Integration:} Adaptation for drip systems with flow rate and pressure monitoring
-    \item \textbf{Comparative Field Studies:} Long-term comparison (6-12 months) versus traditional irrigation measuring water consumption, crop yield, and quality
-    \item \textbf{Energy Efficiency Analysis:} Quantify energy savings from reduced pump cycling in kWh and cost terms
-    \item \textbf{Scalability Study:} Test multi-node deployments across larger farms (5-10 acres) evaluating network reliability and data aggregation
-\end{itemize}
-
-% ====================================================================
-% VIII. CONCLUSION
-% ====================================================================
+Future research opportunities include crop-specific threshold optimization through field trials, soil type adaptation for clay/loam/sandy soils, comparative studies quantifying water savings versus traditional irrigation, and scalability testing across larger farms (5-10 acres).
 
 \section{Conclusion}
 
-This paper presented a cost-effective ESP32-based smart irrigation system addressing critical challenges in precision agriculture through multi-sensor environmental monitoring and intelligent automated control. The developed system successfully integrates four sensors (soil moisture, rain, pH, temperature-humidity) with a novel hysteresis-based control algorithm, demonstrating significant improvements over existing approaches.
+This paper presented a cost-effective ESP32-based smart irrigation system addressing critical challenges in precision agriculture through multi-sensor environmental monitoring and intelligent automated control. The developed system successfully integrates four sensors (soil moisture, rain, pH, temperature-humidity) with a novel hysteresis-based control algorithm.
 
-Key achievements include: (1) implementation of dual-threshold hysteresis control reducing pump cycling by 75-80\%, extending equipment lifespan and improving energy efficiency, (2) successful multi-parameter decision fusion with priority-based logic for comprehensive field assessment, (3) real-time local feedback through LCD and LED indicators combined with cloud connectivity for remote monitoring, (4) demonstration prototype validating system functionality with response times under 3 seconds and sensor accuracy within $\pm$5\%, and (5) total component cost maintained below \$50, making precision irrigation accessible to small-scale farmers and educational institutions.
+Key achievements include: (1) implementation of dual-threshold hysteresis control reducing pump cycling by 75-80\%, extending equipment lifespan and improving energy efficiency, (2) successful multi-parameter decision fusion with priority-based logic for comprehensive field assessment, (3) real-time local feedback through LCD and LED indicators combined with cloud connectivity for remote monitoring, (4) demonstration prototype validating system functionality with response times under 3 seconds and sensor accuracy within $\pm$5\%, and (5) total component cost maintained below \$50, making precision irrigation accessible to small-scale farmers.
 
 Testing across multiple scenarios confirmed reliable operation in moisture extremes, proper hysteresis zone behavior preventing oscillation, rain override functionality for water conservation, and robust WiFi communication with automatic reconnection. The modular architecture supports future enhancements including multi-zone expansion, additional sensor integration, alternative communication protocols, and machine learning-based predictive control.
 
-The significance of this work lies in democratizing precision agriculture technology through affordable, scalable solutions that contribute to sustainable water management. As global water scarcity intensifies and agricultural demands increase, IoT-enabled smart irrigation systems will play crucial roles in optimizing resource utilization while maintaining food security. The foundation established by this research provides a platform for continued innovation in precision farming, with ongoing development addressing identified limitations and expanding capabilities toward comprehensive autonomous agricultural management systems.
-
-Future work will focus on field deployment trials, long-term comparative studies quantifying water savings and yield impacts, and integration of weather forecasting and machine learning for predictive irrigation scheduling. The ultimate goal is a comprehensive, intelligent farming system that maximizes productivity while minimizing environmental impact, supporting sustainable agriculture for future generations.
-
-% ====================================================================
-% ACKNOWLEDGMENT
-% ====================================================================
+The significance of this work lies in democratizing precision agriculture technology through affordable, scalable solutions that contribute to sustainable water management. As global water scarcity intensifies, IoT-enabled smart irrigation systems will play crucial roles in optimizing resource utilization while maintaining food security.
 
 \section*{Acknowledgment}
 
 The authors would like to thank PSG College of Technology, Department of Biomedical Engineering, for providing resources and support for this project. Special appreciation to faculty advisors and laboratory technicians who facilitated hardware assembly and testing procedures.
 
-% ====================================================================
-% REFERENCES
-% ====================================================================
-
 \begin{thebibliography}{99}
 
 \bibitem{fao2017}
 Food and Agriculture Organization of the United Nations, ``Water for Sustainable Food and Agriculture: A Report Produced for the G20 Presidency of Germany,'' Rome, Italy, 2017.
-
-\bibitem{liang2019}
-W. Liang, H. Qi, and Q. Shi, ``Research on Water-Saving Irrigation Automatic Control System Based on Internet of Things,'' in \emph{Proc. IEEE Int. Conf. Mechatronics and Automation (ICMA)}, Tianjin, China, 2019, pp. 1012-1016.
 
 \bibitem{kumar2016}
 M. Kumar, D. Patel, and R. Singh, ``Development of Automatic Irrigation System Using Soil Moisture Sensor,'' in \emph{Proc. Int. Conf. Electrical, Electronics, and Optimization Techniques (ICEEOT)}, Chennai, India, 2016, pp. 2451-2455.
@@ -835,46 +407,21 @@ M. Ayaz, M. Ammad-Uddin, Z. Sharif, A. Mansour, and E.-H. M. Aggoune, ``Internet
 \bibitem{gutiérrez2014}
 J. Gutiérrez, J. F. Villa-Medina, A. Nieto-Garibay, and M. Á. Porta-Gándara, ``Automated Irrigation System Using a Wireless Sensor Network and GPRS Module,'' \emph{IEEE Trans. Instrum. Meas.}, vol. 63, no. 1, pp. 166-176, Jan. 2014.
 
-\bibitem{viani2017}
-F. Viani, M. Bertolli, and E. Salucci, ``A Wireless Monitoring System for Phytosanitary Treatment in Smart Farming Applications,'' in \emph{Proc. IEEE Int. Workshop Metrology for Agriculture and Forestry}, Padua, Italy, 2017, pp. 76-80.
-
-\bibitem{cambra2017}
-C. Cambra, S. Sendra, J. Lloret, and L. Garcia, ``An IoT Service-Oriented System for Agriculture Monitoring,'' in \emph{Proc. IEEE Int. Conf. Communications (ICC)}, Paris, France, 2017, pp. 1-6.
-
-\bibitem{rajalakshmi2017}
-P. Rajalakshmi and S. D. Mahalakshmi, ``IOT Based Crop-Field Monitoring and Irrigation Automation,'' in \emph{Proc. IEEE Int. Conf. Intelligent Systems and Control (ISCO)}, Coimbatore, India, 2017, pp. 1-6.
-
 \bibitem{goap2018}
 A. Goap, D. Sharma, A. K. Shukla, and C. R. Krishna, ``An IoT Based Smart Irrigation Management System Using Machine Learning and Open Source Technologies,'' \emph{Comput. Electron. Agric.}, vol. 155, pp. 41-49, Dec. 2018.
 
-\bibitem{adeyemi2017}
-O. Adeyemi, I. Grove, S. Peets, and T. Norton, ``Advanced Monitoring and Management Systems for Improving Sustainability in Precision Irrigation,'' \emph{Sustainability}, vol. 9, no. 3, p. 353, Mar. 2017.
-
-\bibitem{nawandar2013}
+\bibitem{nawandar2019}
 N. K. Nawandar and V. R. Satpute, ``IoT Based Low Cost and Intelligent Module for Smart Irrigation System,'' \emph{Comput. Electron. Agric.}, vol. 162, pp. 979-990, Jul. 2019.
-
-\bibitem{li2017}
-J. Li, H. Liu, and L. Wei, ``Development and Validation of an IoT-Based Environmental Monitoring System for Greenhouse Agriculture,'' in \emph{Proc. IEEE Int. Conf. Computer and Communications (ICCC)}, Chengdu, China, 2017, pp. 2833-2837.
-
-\bibitem{kamilaris2017}
-A. Kamilaris, A. Kartakoullis, and F. X. Prenafeta-Boldú, ``A Review on the Practice of Big Data Analysis in Agriculture,'' \emph{Comput. Electron. Agric.}, vol. 143, pp. 23-37, Dec. 2017.
 
 \bibitem{tzounis2017}
 A. Tzounis, N. Katsoulas, T. Bartzanas, and C. Kittas, ``Internet of Things in Agriculture, Recent Advances and Future Challenges,'' \emph{Biosyst. Eng.}, vol. 164, pp. 31-48, Dec. 2017.
 
-\bibitem{brewster2017}
-C. Brewster, I. Roussaki, N. Kalatzis, K. Doolin, and K. Ellis, ``IoT in Agriculture: Designing a Europe-Wide Large-Scale Pilot,'' \emph{IEEE Commun. Mag.}, vol. 55, no. 9, pp. 26-33, Sep. 2017.
+\bibitem{rajalakshmi2017}
+P. Rajalakshmi and S. D. Mahalakshmi, ``IOT Based Crop-Field Monitoring and Irrigation Automation,'' in \emph{Proc. IEEE Int. Conf. Intelligent Systems and Control (ISCO)}, Coimbatore, India, 2017, pp. 1-6.
 
-\bibitem{espressif2019}
-Espressif Systems, ``ESP32 Series Datasheet,'' ver. 3.4, Shanghai, China, 2019. [Online]. Available: https://www.espressif.com/sites/default/files/documentation/esp32\_datasheet\_en.pdf
-
-\bibitem{allen1998}
-R. G. Allen, L. S. Pereira, D. Raes, and M. Smith, ``Crop Evapotranspiration: Guidelines for Computing Crop Water Requirements,'' FAO Irrigation and Drainage Paper No. 56, Rome, Italy, 1998.
+\bibitem{adeyemi2017}
+O. Adeyemi, I. Grove, S. Peets, and T. Norton, ``Advanced Monitoring and Management Systems for Improving Sustainability in Precision Irrigation,'' \emph{Sustainability}, vol. 9, no. 3, p. 353, Mar. 2017.
 
 \end{thebibliography}
-
-% ====================================================================
-% END OF DOCUMENT
-% ====================================================================
 
 \end{document}
